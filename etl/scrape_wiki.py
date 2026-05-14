@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
  
 class WikiTableParser:
     def __init__(self, html_content):
@@ -23,11 +24,11 @@ class WikiTableParser:
     def transform_headers(self):
         """Standardize header names to snake_case."""
         mapping = {
-            'Name':'name',
+            'Name':'manager_name',
             'Nat.':'nationality',
             'Club':'club',
-            'From':'from',
-            'Until':'until',
+            'From':'from_date',
+            'Until':'until_date',
             'Duration(days)':'duration',
             'Years inLeague':'years_in_league',
             'Ref.':'ref'
@@ -36,6 +37,7 @@ class WikiTableParser:
         self.df = self.df.rename(columns=mapping)
 
     def parse_managers_table(self, table_keyword='Managers'):
+        now = datetime.now()
         """Finds the table by caption and extracts the data."""
         target_table = self._find_table(table_keyword)
         
@@ -82,6 +84,7 @@ class WikiTableParser:
                 rows_data.append(processed_row[:len(headers)])
 
         self.df = pd.DataFrame(rows_data, columns=headers)
+        self.df['loaded_at'] = now
         self.transform_headers()
         return self.df.loc[1:]
 
