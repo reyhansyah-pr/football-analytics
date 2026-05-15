@@ -1,19 +1,22 @@
 with source as (
     select * from {{ source('raw_data', 'raw_matches') }}
 )
+
 , dedup as (
     select
         *,
         row_number() over(partition by match_id, season_id order by loaded_at desc) as rn
     from source
 )
+
 , renamed as (
     select
-        md5(match_id::varchar||season_id::varchar) as match_season_id,
+        md5(match_id::varchar||season_id::varchar) as match_season_key,
         match_id::varchar as match_id,
         season_id::varchar as season_id,
         matchweek::int as matchweek,
         kickoff::timestamp as kickoff_at,
+        CAST(kickoff AS DATE) as kickoff_date,
   
         status::varchar as status,
         result_type::varchar as result_type,
