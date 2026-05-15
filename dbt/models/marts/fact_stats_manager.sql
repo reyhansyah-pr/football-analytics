@@ -14,12 +14,14 @@ cte_matches as (
     mh.incumbent_manager home_incumbent_manager ,
     mh.caretaker_manager home_caretaker_manager ,
 	sm.home_score_final ,
+    case when away_score_final = 0 then 1 else 0 end as home_clean_sheet ,
 	dta.team_key away_team_key ,
 	sm.away_team ,
 	ma.manager_name away_manager ,
     ma.incumbent_manager away_incumbent_manager ,
     ma.caretaker_manager away_caretaker_manager ,
 	sm.away_score_final ,
+    case when home_score_final = 0 then 1 else 0 end as away_clean_sheet ,
     case
             when home_score_final > away_score_final then 3
             when home_score_final = away_score_final then 1
@@ -68,7 +70,8 @@ cte_matches as (
     sum(case when home_team_status = 'L' then 1 else 0 end) home_lose ,
     sum(home_team_points) total_home_points ,
     sum(home_score_final ) total_home_scores ,
-    sum(away_score_final ) total_home_conceded
+    sum(away_score_final ) total_home_conceded ,
+    sum(home_clean_sheet) total_home_clean_sheet
 	from cte_matches
 	group by 1,2,3,4,5,6
 )
@@ -86,7 +89,8 @@ cte_matches as (
     sum(case when away_team_status = 'L' then 1 else 0 end) away_lose ,
     sum(away_team_points) total_away_points ,
     sum(away_score_final ) total_away_scores ,
-    sum(home_score_final ) total_away_conceded
+    sum(home_score_final ) total_away_conceded ,
+    sum(away_clean_sheet) total_away_clean_sheet
 	from cte_matches
 	group by 1,2,3,4,5,6
 )
@@ -105,6 +109,7 @@ cte_matches as (
 	coalesce(ch.total_home_points , 0) total_home_points ,
 	coalesce(ch.total_home_scores , 0) total_home_scores ,
 	coalesce(ch.total_home_conceded , 0) total_home_conceded ,
+    coalesce(ch.total_home_clean_sheet , 0) total_home_clean_sheet ,
     coalesce(ca.total_away_matches , 0) total_away_matches ,
 	coalesce(ca.away_win , 0) away_win ,
 	coalesce(ca.away_draw , 0) away_draw ,
@@ -112,17 +117,20 @@ cte_matches as (
 	coalesce(ca.total_away_points , 0) total_away_points ,
 	coalesce(ca.total_away_scores , 0) total_away_scores ,
 	coalesce(ca.total_away_conceded , 0) total_away_conceded ,
+    coalesce(ca.total_away_clean_sheet , 0) total_away_clean_sheet ,
     coalesce(ch.total_home_matches , 0) + coalesce(ca.total_away_matches , 0) total_matches ,
 	coalesce(ch.home_win , 0) + coalesce(ca.away_win , 0) total_win ,
 	coalesce(ch.home_draw , 0) + coalesce(ca.away_draw , 0) total_draw ,
     coalesce(ch.home_lose , 0) + coalesce(ca.away_lose , 0) total_lose ,
     coalesce(ch.total_home_points , 0) + coalesce(ca.total_away_points , 0) total_points ,
     coalesce(ch.total_home_scores , 0) + coalesce(ca.total_away_scores , 0) total_scores ,
-    coalesce(ch.total_home_conceded , 0) + coalesce(ca.total_away_conceded , 0) total_conceded
+    coalesce(ch.total_home_conceded , 0) + coalesce(ca.total_away_conceded , 0) total_conceded ,
+    coalesce(ch.total_home_clean_sheet , 0) + coalesce(ca.total_away_clean_sheet , 0) total_clean_sheet
 	from 
 	cte_manager_home_stats ch
 	full outer join cte_manager_away_stats ca
 		on ca.season_id = ch.season_id
 		and ca.away_manager = ch.home_manager 
+        and ca.away_team_key = ch.home_team_key
 )
 select * from cte_manager_full 
