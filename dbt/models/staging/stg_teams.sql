@@ -1,15 +1,17 @@
 with source as (
     select * from {{ source('raw_data', 'raw_teams') }}
 )
+
 , dedup as (
     select
         *,
         row_number() over(partition by team_id, season_id order by loaded_at desc) as rn
     from source
 )
+
 , renamed as (
     select
-        md5(team_id::varchar||season_id::varchar) as team_season_id,
+        md5(team_id::varchar||season_id::varchar) as team_season_key,
         team_id::varchar as team_id,
         season_id::varchar as season_id,
         team_name::varchar as team_name,

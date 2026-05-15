@@ -14,10 +14,12 @@ cte_match as (
 	select
 	season_id ,
 	match_id ,
+	dth.team_key home_team_key ,
 	home_team_id ,
 	home_team ,
 	home_score_final ,
 	away_score_final ,
+	dta.team_key away_team_key ,
 	away_team_id ,
 	away_team ,
 	case
@@ -40,15 +42,20 @@ cte_match as (
 		when home_score_final = away_score_final then 'D'
 		else 'W'
 	end away_team_status,
-	loaded_at ,
-	created_at
-	from cte_match 
+	cte.loaded_at ,
+	cte.created_at
+	from cte_match cte
+	left join {{ ref('dim_teams') }} dth
+		on dth.team_id = cte.home_team_id
+	left join {{ ref('dim_teams') }} dta
+		on dta.team_id = cte.away_team_id
 	order by match_id asc
 )
 
 , cte_home_point as (
 	select
 	season_id ,
+	home_team_key ,
 	home_team_id ,
 	home_team ,
 	count(distinct match_id) total_home_games ,
@@ -61,12 +68,13 @@ cte_match as (
 	max(loaded_at) loaded_at ,
 	max(created_at) created_at
 	from cte_point 
-	group by 1,2,3
+	group by 1,2,3,4
 )
 
 , cte_away_point as (
 	select
 	season_id ,
+	away_team_key ,
 	away_team_id  ,
 	away_team ,
 	count(distinct match_id) total_away_games ,
@@ -79,12 +87,13 @@ cte_match as (
 	max(loaded_at) loaded_at ,
 	max(created_at) created_at
 	from cte_point 
-	group by 1,2,3
+	group by 1,2,3,4
 )
 
 , cte_table as (
 	select
 	h.season_id ,
+	h.home_team_key team_key ,
 	h.home_team_id team_id ,
 	h.home_team team_name ,
 	h.total_home_games + a.total_away_games total_games ,
