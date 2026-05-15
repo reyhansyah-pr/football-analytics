@@ -8,3 +8,4 @@ sources:
       - name: raw_teams
       - name: raw_matches
       - name: raw_players
+      - name: raw_managers
