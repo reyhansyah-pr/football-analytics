@@ -39,7 +39,8 @@ cte_matches as (
             when home_score_final > away_score_final then 'L'
             when home_score_final = away_score_final then 'D'
             else 'W'
-    end away_team_status
+    end away_team_status ,
+	now() as created_at
 	from 
 	{{ ref('stg_matches') }} sm 
 	left join {{ ref('dim_teams') }} dth

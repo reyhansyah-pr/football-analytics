@@ -121,7 +121,7 @@ cte_match as (
 	(h.total_home_scores + a.total_away_scores) - (h.total_away_scores + a.total_home_scores) goal_difference,
 	h.total_home_points + a.total_away_points total_points ,
 	h.loaded_at ,
-	h.created_at 
+	now() as created_at
 	from
 	cte_home_point h
 	full outer join cte_away_point a

@@ -125,7 +125,8 @@ cte_matches as (
     coalesce(ch.total_home_points , 0) + coalesce(ca.total_away_points , 0) total_points ,
     coalesce(ch.total_home_scores , 0) + coalesce(ca.total_away_scores , 0) total_scores ,
     coalesce(ch.total_home_conceded , 0) + coalesce(ca.total_away_conceded , 0) total_conceded ,
-    coalesce(ch.total_home_clean_sheet , 0) + coalesce(ca.total_away_clean_sheet , 0) total_clean_sheet
+    coalesce(ch.total_home_clean_sheet , 0) + coalesce(ca.total_away_clean_sheet , 0) total_clean_sheet ,
+	now() as created_at
 	from 
 	cte_manager_home_stats ch
 	full outer join cte_manager_away_stats ca
