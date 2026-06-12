@@ -5,7 +5,7 @@ with source as (
 , dedup as (
     select
         *,
-        row_number() over(partition by club, manager_name, from_date order by loaded_at desc) as rn
+        row_number() over(partition by club, REGEXP_REPLACE(manager_name, '[†§‡]', '', 'g')::varchar, from_date order by loaded_at desc) as rn
     from source
 )
 
