@@ -1,0 +1,14 @@
+FROM apache/airflow:2.9.1-python3.11
+
+USER root
+COPY requirements.txt /requirements.txt
+
+USER airflow
+
+# We chain everything into one clean RUN block using backslashes (\)
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir \
+       psycopg2-binary \
+       "mashumaro<3.13" \
+       dbt-postgres \
+    -r /requirements.txt
