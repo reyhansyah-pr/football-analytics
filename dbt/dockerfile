@@ -9,4 +9,4 @@ COPY . .
 # Force the stable version of the library to avoid the mashumaro error
 RUN pip install "mashumaro<3.13"
 
-# CMD ["run"]
+CMD ["run"]

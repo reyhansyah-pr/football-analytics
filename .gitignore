@@ -3,6 +3,8 @@
 dbt/profiles.yml
 dbt/.user.yml
 *.session.sql
+postgres_data/
+metabase_data/
 
 # Python & Environments
 .venv/

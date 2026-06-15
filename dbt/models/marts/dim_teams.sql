@@ -21,7 +21,7 @@ cte_teams as (
         abbreviation,
         city,
         loaded_at,
-        created_at
+        now() as created_at
     from cte_dedup
     where rn = 1
 )
