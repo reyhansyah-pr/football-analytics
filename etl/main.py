@@ -18,6 +18,7 @@ if __name__ == "__main__":
         user=os.getenv("POSTGRES_USER"),
         password=os.getenv("POSTGRES_PASSWORD"),
         host=os.getenv("POSTGRES_HOST"),
+        # host="localhost",
         port=5432,
         database=os.getenv("POSTGRES_DB")
     )
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         players_df = scraper.get_all_squads()
         
         print("Fetching Match Results...")
-        matches_df = scraper.get_matches(matchweeks=1) # Keeps testing fast with 1 matchweek
+        matches_df = scraper.get_matches(matchweeks=38) # Keeps testing fast with 1 matchweek
 
         print("Starting Data Load: API dataframes into PostgreSQL...")
         loader.load_dataframe(teams_df, "raw_teams", schema="raw")
