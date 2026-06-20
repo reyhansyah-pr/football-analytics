@@ -1,12 +1,12 @@
 dbt_pl:
   outputs:
     dev:
-      dbname: premier_league_db
+      dbname: "{{ env_var('POSTGRES_DB') }}"
       host: postgres
-      pass: admin123
+      user: "{{ env_var('POSTGRES_USER') }}"
+      pass: "{{ env_var('POSTGRES_PASSWORD') }}"
       port: 5432
       schema: staging
-      threads: 1
+      threads: 4
       type: postgres
-      user: admin
   target: dev
