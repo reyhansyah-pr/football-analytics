@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import time
 import random
+import os
 from datetime import datetime
 
 now = datetime.now()
@@ -10,7 +11,7 @@ class PremierLeagueScraper:
     def __init__(self, season_start, season_end):
         self.season_start = season_start
         self.season_end = season_end
-        self.base_api = "https://sdp-prem-prod.premier-league-prod.pulselive.com/api"
+        self.base_api = os.getenv("API_SOURCE")
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Origin": "https://www.premierleague.com",
@@ -157,7 +158,7 @@ class PremierLeagueScraper:
 if __name__ == "__main__":
     scraper = PremierLeagueScraper(season_start=2021, season_end=2022)
     scraper.get_all_squads()
-    # df = scraper.get_all_squads()
+    df = scraper.get_all_squads()
 
-    # print(df.sample(10))
+    print(df.sample(10))
     # print(df['season_id'].unique())

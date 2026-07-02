@@ -7,6 +7,7 @@ postgres_data/
 metabase_data/
 
 # Python & Environments
+notebooks/
 .venv/
 etl/venv_etl/
 **/__pycache__/

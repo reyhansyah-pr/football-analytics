@@ -1,3 +1,3 @@
-# Kaggle-to-MySQL ETL Pipeline
+# End-to-End ETL Pipeline
 
 readme here
