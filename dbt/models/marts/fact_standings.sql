@@ -120,8 +120,7 @@ cte_match as (
 	h.total_away_scores + a.total_home_scores goal_against ,
 	(h.total_home_scores + a.total_away_scores) - (h.total_away_scores + a.total_home_scores) goal_difference,
 	h.total_home_points + a.total_away_points total_points ,
-	h.loaded_at ,
-	now() as created_at
+	h.loaded_at
 	from
 	cte_home_point h
 	full outer join cte_away_point a
@@ -129,6 +128,10 @@ cte_match as (
 		and a.season_id = h.season_id 
 )
 
-select * from cte_table
+select 
+*,
+rank() over(partition by season_id order by season_id asc, total_points desc, goal_difference desc, goal_scored desc) pos_by_season,
+now() as created_at 
+from cte_table
 where  1=1
 order by season_id asc, total_points desc, goal_difference desc, goal_scored desc
