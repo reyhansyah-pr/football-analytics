@@ -63,6 +63,7 @@ cte_union as (
 )
 SELECT
 *
+, now() as created_at
 FROM
 cte_union
 order by
