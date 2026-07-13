@@ -20,7 +20,7 @@ with source as (
         last_name::varchar as last_name,
         position::varchar as position,
         shirt_num::int as shirt_num,
-        birth_date::varchar as birth_date,
+        nullif(birth_date, 'Unknown')::date birth_date,
         joined_club::varchar as joined_club,
         nationality::varchar as nationality,
         height_cm::float as height_cm,
