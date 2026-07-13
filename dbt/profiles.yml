@@ -7,6 +7,6 @@ dbt_pl:
       pass: "{{ env_var('POSTGRES_PASSWORD') }}"
       port: 5432
       schema: staging
-      threads: 4
+      threads: 16
       type: postgres
   target: dev
