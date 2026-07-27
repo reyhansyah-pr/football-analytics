@@ -1,7 +1,15 @@
 {{ config(materialized='table') }}
 
 with
-cte_matches as (
+cte_dedup_mng as (
+	select
+	*
+	, row_number() over(partition by club_name, from_date order by until_date desc) rn
+	from
+	{{ ref('stg_manager') }}
+)
+
+, cte_matches as (
 	select distinct
 	sm.season_id ,
 	sm.matchweek ,
@@ -14,12 +22,20 @@ cte_matches as (
     mh.incumbent_manager home_incumbent_manager ,
     mh.caretaker_manager home_caretaker_manager ,
 	sm.home_score_final ,
+	case
+		when sm.away_score_final = 0 then 1
+		else 0
+	end home_clean_sheet ,
 	dta.team_key away_team_key ,
 	sm.away_team ,
 	ma.manager_name away_manager ,
     ma.incumbent_manager away_incumbent_manager ,
     ma.caretaker_manager away_caretaker_manager ,
 	sm.away_score_final ,
+	case
+		when sm.home_score_final = 0 then 1
+		else 0
+	end away_clean_sheet ,
     case
             when home_score_final > away_score_final then 3
             when home_score_final = away_score_final then 1
@@ -45,13 +61,15 @@ cte_matches as (
 	{{ ref('stg_matches') }} sm 
 	left join {{ ref('dim_teams') }} dth
 		on dth.team_id = sm.home_team_id
-	left join {{ ref('stg_manager') }} mh 
+	left join cte_dedup_mng mh 
 		on mh.club_key = dth.team_key 
-		and sm.kickoff_date >= mh.from_date and sm.kickoff_date <= mh.until_date 
+		and sm.kickoff_date > mh.from_date and sm.kickoff_date <= mh.until_date 
+		and mh.rn = 1
 	left join {{ ref('dim_teams') }} dta 
 		on dta.team_id = sm.away_team_id 
-	left join {{ ref('stg_manager') }} ma
+	left join cte_dedup_mng ma
 		on ma.club_key = dta.team_key 
-		and sm.kickoff_date >= ma.from_date and sm.kickoff_date <= ma.until_date
+		and sm.kickoff_date > ma.from_date and sm.kickoff_date <= ma.until_date
+		and ma.rn = 1
 )
 select * from cte_matches
