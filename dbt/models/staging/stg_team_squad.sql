@@ -14,6 +14,7 @@ with source as (
         md5(player_id::varchar||season_id::varchar||team_id::varchar) as player_season_team_key,
         season_id::varchar as season_id,
         team_id::varchar as team_id,
+        team_name::varchar as team_name,
         player_id::varchar as player_id,
         display_name::varchar as display_name,
         first_name::varchar as first_name,
