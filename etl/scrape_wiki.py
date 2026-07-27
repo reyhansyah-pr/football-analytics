@@ -80,8 +80,8 @@ class WikiTableParser:
                 processed_row.append(cell_val)
 
             # Ensure row length matches headers (handling Wikipedia colspans/rowspans)
-            if len(processed_row) >= len(headers):
-                rows_data.append(processed_row[:len(headers)])
+            # if len(processed_row) >= len(headers):
+            rows_data.append(processed_row[:len(headers)])
 
         self.df = pd.DataFrame(rows_data, columns=headers)
         self.df['loaded_at'] = now
@@ -92,4 +92,5 @@ if __name__ == "__main__":
     parser = WikiTableParser('https://en.wikipedia.org/wiki/List_of_Premier_League_managers')
     df = parser.parse_managers_table()
     if df is not None:
-        print(df.head())
+        # print(df.head())
+        print(df[df['club'].str.contains('bournemouth', case=False)])
