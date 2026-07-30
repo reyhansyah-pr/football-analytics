@@ -93,4 +93,4 @@ if __name__ == "__main__":
     df = parser.parse_managers_table()
     if df is not None:
         # print(df.head())
-        print(df[df['club'].str.contains('bournemouth', case=False)])
+        print(df[df['club'].str.contains('burnley', case=False)])
