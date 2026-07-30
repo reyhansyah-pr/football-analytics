@@ -20,7 +20,7 @@ with source as (
 			else to_date(until_date, 'DD Month YYYY')::date
 		end until_date,
         case
-            when (manager_name like '%†%' or manager_name like '%§%') then 1
+            when (manager_name not like '%‡%' ) then 1
             else 0
         end incumbent_manager,
         case
