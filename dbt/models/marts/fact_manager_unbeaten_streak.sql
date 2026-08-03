@@ -22,10 +22,10 @@ WITH cte_base_matches AS (
     SELECT
         *,
         case
-        	when result_status = 'W'	then
+        	when result_status <> 'L'	then
         SUM(
             CASE 
-                WHEN result_status != 'W' 
+                WHEN result_status = 'L' 
                   OR prev_manager IS NULL 
                   OR manager_name != prev_manager 
                 THEN 1 
@@ -36,10 +36,10 @@ WITH cte_base_matches AS (
             ORDER BY kickoff_date ASC
         ) end AS streak_grp,  
         case
-        	when result_status = 'W' then
+        	when result_status <> 'L' then
         SUM(
             CASE 
-                WHEN result_status != 'W' 
+                WHEN result_status = 'L' 
                   OR prev_manager IS NULL 
                   OR manager_name != prev_manager 
                 THEN 1 
@@ -52,7 +52,7 @@ WITH cte_base_matches AS (
     FROM cte_base_matches
 )
 
-, cte_win_streak AS (
+, cte_unbeaten_streak AS (
     SELECT
         season_id,
         kickoff_date,
@@ -66,21 +66,21 @@ WITH cte_base_matches AS (
         streak_grp,
         streak_grp_season,
         CASE 
-            WHEN result_status = 'W' THEN 
+            WHEN result_status <> 'L' THEN 
                 ROW_NUMBER() OVER (
                     PARTITION BY team_name, home_away_category, streak_grp 
                     ORDER BY kickoff_date ASC
                 )
             ELSE 0 
-        END AS current_win_streak,
+        END AS current_unbeaten_streak,
         CASE 
-            WHEN result_status = 'W' THEN 
+            WHEN result_status <> 'L' THEN 
                 ROW_NUMBER() OVER (
                     PARTITION BY team_name, home_away_category, season_id, streak_grp_season 
                     ORDER BY kickoff_date ASC
                 )
             ELSE 0 
-        END AS current_win_streak_season,
+        END AS current_unbeaten_streak_season,
         MIN(kickoff_date) OVER (PARTITION BY team_name, home_away_category, streak_grp) AS start_streak,
         MAX(kickoff_date) OVER (PARTITION BY team_name, home_away_category, streak_grp) AS end_streak,
         MIN(kickoff_date) OVER (PARTITION BY team_name, home_away_category, season_id, streak_grp_season) AS start_streak_season,
@@ -91,9 +91,9 @@ WITH cte_base_matches AS (
 , cte_final AS (
     SELECT
         *,
-        CASE WHEN result_status = 'W' THEN end_streak - start_streak END AS streak_duration,
-        CASE WHEN result_status = 'W' THEN end_streak_season - start_streak_season END AS streak_duration_season
-    FROM cte_win_streak
+        CASE WHEN result_status <> 'L' THEN end_streak - start_streak END AS streak_duration,
+        CASE WHEN result_status <> 'L' THEN end_streak_season - start_streak_season END AS streak_duration_season
+    FROM cte_unbeaten_streak
 )
 select
 *

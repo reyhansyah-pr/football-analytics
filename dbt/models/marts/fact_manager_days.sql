@@ -31,10 +31,10 @@ with cte_manager as (
 		end until_season_date
 	from
 	cte_manager sm 
-	left join {{ ref('dim_season') }} ds 
+	inner join {{ ref('dim_season') }} ds 
 		on ds.season_start_date between sm.from_date and sm.until_date 
 		or sm.from_date between ds.season_start_date and ds.season_end_date
-    left join {{ ref('dim_teams') }} dt
+    inner join {{ ref('dim_teams') }} dt
         on dt.team_key = sm.club_key
 	where 1=1
 	and season_id is not null
