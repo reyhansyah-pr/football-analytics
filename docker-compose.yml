@@ -28,17 +28,6 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  # dbt:
-  #   # build: ./dbt
-  #   image: ghcr.io/dbt-labs/dbt-postgres:1.8.latest
-  #   container_name: pl_dbt
-  #   volumes:
-  #     - ./dbt:/usr/app/dbt
-  #   environment:
-  #     - DBT_PROFILES_DIR=/usr/app/dbt
-  #   depends_on:
-  #     - postgres
-
   metabase:
     image: metabase/metabase:latest
     container_name: pl_metabase
