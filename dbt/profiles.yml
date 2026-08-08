@@ -4,7 +4,7 @@ dbt_pl:
       dbname: "{{ env_var('POSTGRES_DB') }}"
       host: postgres
       user: "{{ env_var('POSTGRES_USER') }}"
-      pass: "{{ env_var('POSTGRES_PASSWORD') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"  # Changed 'pass' to 'password'
       port: 5432
       schema: staging
       threads: 16
