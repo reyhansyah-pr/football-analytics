@@ -49,7 +49,7 @@ if __name__ == "__main__":
         print("Executing Task: Ingesting Premier League REST API Data...")
         print("="*50)
         
-        scraper = PremierLeagueScraper(season_start=2025, season_end=2025)
+        scraper = PremierLeagueScraper(season_start=2015, season_end=2025)
 
         print("Fetching Teams...")
         teams_df = scraper.get_teams()
