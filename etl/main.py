@@ -49,7 +49,7 @@ if __name__ == "__main__":
         print("Executing Task: Ingesting Premier League REST API Data...")
         print("="*50)
         
-        scraper = PremierLeagueScraper(season_start=2015, season_end=2025)
+        scraper = PremierLeagueScraper(season_start=2025, season_end=2025)
 
         print("Fetching Teams...")
         teams_df = scraper.get_teams()
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         players_df = scraper.get_all_squads()
         
         print("Fetching Match Results...")
-        matches_df = scraper.get_matches(matchweeks=38) # Keeps testing fast with 1 matchweek
+        matches_df = scraper.get_matches(matchweeks=1) # Keeps testing fast with 1 matchweek
 
         print("Starting Data Load: API dataframes into PostgreSQL...")
         loader.load_dataframe(teams_df, "raw_teams", schema="raw")
