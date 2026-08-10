@@ -24,4 +24,4 @@ jobs:
             git reset --hard origin/main
 
             # Run dbt
-            docker exec pl_ariflow_scheduler bash -c "cd dbt && dbt build"
+            docker exec pl_airflow_scheduler bash -c "cd dbt && dbt build"
