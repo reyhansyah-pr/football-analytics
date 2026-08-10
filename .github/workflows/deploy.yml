@@ -22,3 +22,6 @@ jobs:
             # Fetch latest changes from main
             git fetch origin main
             git reset --hard origin/main
+
+            # Run dbt
+            docker exec pl_ariflow_scheduler bash -c "cd dbt && dbt build"
