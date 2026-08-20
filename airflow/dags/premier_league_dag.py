@@ -17,7 +17,7 @@ with DAG(
     'premier_league_isolated_pipeline',
     default_args=default_args,
     description='Orchestrates Premier League modular ingestion and dbt marts creation using BashOperator',
-    schedule_interval='@weekly', # Runs automatically every week
+    schedule_interval='0 0 * * *', # Runs every day at 06:00 UTC
     catchup=False,
     max_active_runs=1
 ) as dag:
