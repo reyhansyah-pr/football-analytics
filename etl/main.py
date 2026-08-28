@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # e.g., 'python main.py scrape_wiki' -> sys.argv[1] becomes 'scrape_wiki'
     task = sys.argv[1] if len(sys.argv) > 1 else "all"
 
-    # Initialize the Postgres Connection Engine (Used by all tasks)
+    # Initialize the Postgres Connection Engine
     loader = PostgresLoader(
         user=os.getenv("POSTGRES_USER"),
         password=os.getenv("POSTGRES_PASSWORD"),
@@ -23,9 +23,7 @@ if __name__ == "__main__":
         database=os.getenv("POSTGRES_DB")
     )
 
-    # ----------------------------------------------------
     # TASK 1: Wikipedia Manager Ingestion
-    # ----------------------------------------------------
     if task == "scrape_wiki" or task == "all":
         print("\n" + "="*50)
         print("Executing Task: Ingesting Wikipedia Managers...")
@@ -41,15 +39,13 @@ if __name__ == "__main__":
         loader.load_dataframe(manager_df, "raw_managers", schema="raw")
         print("Wikipedia Ingestion Task Completed Successfully!")
 
-    # ----------------------------------------------------
     # TASK 2: Premier League REST API Ingestion
-    # ----------------------------------------------------
     if task == "fetch_api" or task == "all":
         print("\n" + "="*50)
         print("Executing Task: Ingesting Premier League REST API Data...")
         print("="*50)
         
-        scraper = PremierLeagueScraper(season_start=2025, season_end=2025)
+        scraper = PremierLeagueScraper(season_start=2026, season_end=2026) # season to load
 
         print("Fetching Teams...")
         teams_df = scraper.get_teams()
@@ -58,7 +54,7 @@ if __name__ == "__main__":
         players_df = scraper.get_all_squads()
         
         print("Fetching Match Results...")
-        matches_df = scraper.get_matches(matchweeks=1) # Keeps testing fast with 1 matchweek
+        matches_df = scraper.get_matches(matchweeks=38) # total matchweek to load
 
         print("Starting Data Load: API dataframes into PostgreSQL...")
         loader.load_dataframe(teams_df, "raw_teams", schema="raw")
