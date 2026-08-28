@@ -9,7 +9,7 @@ with
       1 order_col
     from
       {{ ref('fact_standings') }} t
-    where t.pos_by_season = 1
+    where t.position_order = 1
     
     union all
     
@@ -20,7 +20,7 @@ with
       2 order_col
     from
       {{ ref('fact_standings') }} t
-    where t.pos_by_season = 4
+    where t.position_order = 4
 
     union all
     
@@ -31,7 +31,7 @@ with
       3 order_col
     from
       {{ ref('fact_standings') }} t
-    where t.pos_by_season = 18
+    where t.position_order = 18
 )
 select
 season_id,
