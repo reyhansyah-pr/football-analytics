@@ -71,5 +71,6 @@ cte_dedup_mng as (
 		on ma.club_key = dta.team_key 
 		and sm.kickoff_date > ma.from_date and sm.kickoff_date <= ma.until_date
 		and ma.rn = 1
+	where sm.status = 'FullTime'
 )
 select * from cte_matches
