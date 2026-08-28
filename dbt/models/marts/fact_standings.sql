@@ -10,6 +10,19 @@ cte_match as (
 	and sm.status = 'FullTime'
 )
 
+, cte_season_end as (
+	select 
+	sm.season_id 
+	, case
+		when sum(case when sm.matchweek = 38 then 1 else 0 end) = 10 
+			then 1 
+			else 0 
+	end season_complete
+	from {{ ref('stg_matches') }} sm 
+	where sm.status = 'FullTime'
+	group by 1
+)
+
 , cte_point as (
 	select
 	season_id ,
@@ -52,6 +65,12 @@ cte_match as (
 	order by match_id asc
 )
 
+, cte_team as (
+	select distinct season_id, home_team_key team_key, home_team_id team_id, home_team team_name from cte_point
+	union
+	select distinct season_id, away_team_key team_key, away_team_id team_id, away_team team_name from cte_point
+)
+
 , cte_home_point as (
 	select
 	season_id ,
@@ -92,45 +111,52 @@ cte_match as (
 
 , cte_table as (
 	select
-	h.season_id ,
-	h.home_team_key team_key ,
-	h.home_team_id team_id ,
-	h.home_team team_name ,
-	h.total_home_games + a.total_away_games total_games ,
-	h.total_home_games ,	
-	h.total_home_points ,
-	h.total_home_scores ,
-	h.total_away_scores total_home_against ,
-	h.total_home_scores - h.total_away_scores home_goal_difference ,
-	h.home_win ,
-	h.home_draw ,
-	h.home_lose ,
-	a.total_away_games ,
-	a.total_away_points ,
-	a.total_away_scores ,
-	a.total_home_scores total_away_against ,
-	a.total_away_scores - a.total_home_scores away_goal_difference ,
-	a.away_win ,
-	a.away_draw ,
-	a.away_lose ,
-	h.home_win + a.away_win total_win ,
-	h.home_draw + a.away_draw total_draw ,
-	h.home_lose + a.away_lose total_lose ,
-	h.total_home_scores + a.total_away_scores goal_scored ,
-	h.total_away_scores + a.total_home_scores goal_against ,
-	(h.total_home_scores + a.total_away_scores) - (h.total_away_scores + a.total_home_scores) goal_difference,
-	h.total_home_points + a.total_away_points total_points ,
-	h.loaded_at
+	t.season_id ,
+	t.team_key ,
+	t.team_id ,
+	t.team_name ,
+	coalesce(h.total_home_games, 0) + coalesce(a.total_away_games, 0) total_games ,
+	coalesce(h.total_home_games, 0) total_home_games ,
+	coalesce(h.total_home_points, 0) total_home_points ,
+	coalesce(h.total_home_scores, 0) total_home_scores ,
+	coalesce(h.total_away_scores, 0) total_home_against ,
+	coalesce(h.total_home_scores, 0) - coalesce(h.total_away_scores, 0) home_goal_difference ,
+	coalesce(h.home_win, 0) home_win ,
+	coalesce(h.home_draw, 0) home_draw ,
+	coalesce(h.home_lose, 0) home_lose ,
+	coalesce(a.total_away_games, 0) total_away_games ,
+	coalesce(a.total_away_points, 0) total_away_points ,
+	coalesce(a.total_away_scores, 0) total_away_scores ,
+	coalesce(a.total_home_scores, 0) total_away_against ,
+	coalesce(a.total_away_scores, 0) - coalesce(a.total_home_scores, 0) away_goal_difference ,
+	coalesce(a.away_win, 0) away_win ,
+	coalesce(a.away_draw, 0) away_draw ,
+	coalesce(a.away_lose, 0) away_lose ,
+	coalesce(h.home_win, 0) + coalesce(a.away_win, 0) total_win ,
+	coalesce(h.home_draw, 0) + coalesce(a.away_draw, 0) total_draw ,
+	coalesce(h.home_lose, 0) + coalesce(a.away_lose, 0) total_lose ,
+	coalesce(h.total_home_scores, 0) + coalesce(a.total_away_scores, 0) goal_scored ,
+	coalesce(h.total_away_scores, 0) + coalesce(a.total_home_scores, 0) goal_against ,
+	(coalesce(h.total_home_scores, 0) + coalesce(a.total_away_scores, 0)) - (coalesce(h.total_away_scores, 0) + coalesce(a.total_home_scores, 0)) goal_difference,
+	coalesce(h.total_home_points, 0) + coalesce(a.total_away_points, 0) total_points ,
+	s.season_complete ,
+	coalesce(h.loaded_at, a.loaded_at) loaded_at
 	from
-	cte_home_point h
+	cte_team t
+	full outer join cte_home_point h
+		on h.season_id = t.season_id 
+		and h.home_team_key = t.team_key 
 	full outer join cte_away_point a
-		on a.away_team_id  = h.home_team_id 
-		and a.season_id = h.season_id 
+		on a.season_id  = t.season_id 
+		and a.away_team_key = t.team_key 
+	left join cte_season_end s
+		on s.season_id = t.season_id
 )
 
 select 
 *,
 rank() over(partition by season_id order by season_id asc, total_points desc, goal_difference desc, goal_scored desc) pos_by_season,
+row_number() over(partition by season_id order by season_id asc, total_points desc, goal_difference desc, goal_scored desc) position_order,
 now() as created_at 
 from cte_table
 where  1=1
