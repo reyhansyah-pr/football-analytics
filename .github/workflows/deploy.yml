@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/football-analytics
-            sudo chown -R $USER:$USER ~/football-analytics #r estore ownership on user root
+            # sudo chown -R $USER:$USER ~/football-analytics #restore ownership on user root
             # Fetch latest changes from main
             git fetch origin main
             git reset --hard origin/main
