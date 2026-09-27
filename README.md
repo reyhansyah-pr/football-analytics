@@ -4,7 +4,7 @@ A [dbt](https://www.getdbt.com/) project that transforms raw Premier League data
 
 ## Overview
 
-Data is ingested from a Premier League API into raw Postgres tables, then modeled through dbt into clean staging models and a set of dimension/fact tables optimized for reporting — season standings, home/away splits, manager tenure and streaks, squad rosters, and more.
+Data is ingested from a Premier League API and [List of Premier League managers](https://en.wikipedia.org/wiki/List_of_Premier_League_managers) into raw Postgres tables, then modeled through dbt into clean staging models and a set of dimension/fact tables optimized for reporting — season standings, home/away splits, manager tenure and streaks, squad rosters, and more.
 
 **Warehouse:** Postgres (`premier_league_db`)
 **Orchestration:** Containerized via Docker (`ghcr.io/dbt-labs/dbt-postgres:1.8`)
@@ -97,8 +97,7 @@ dbt docs serve
 ### Docker
 
 ```bash
-docker build -t dbt_pl .
-docker run --rm dbt_pl
+docker-compose up -d --build etl
 ```
 
 ## Configuration Notes
