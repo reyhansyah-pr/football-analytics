@@ -1,5 +1,16 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key=['team_id', 'season_id']
+    )
+}}
+
 with source as (
     select * from {{ source('raw_data', 'raw_teams') }}
+
+    {% if is_incremental() %}
+        where loaded_at > (select max(loaded_at) from {{ this }})
+    {% endif %}
 )
 
 , dedup as (

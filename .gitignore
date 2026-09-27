@@ -1,28 +1,18 @@
-# Security & Credentials
 .env
 dbt/profiles.yml
 dbt/.user.yml
 *.session.sql
 postgres_data/
 metabase_data/
-
-# Python & Environments
+dbt_docs
 notebooks/
 .venv/
 etl/venv_etl/
 **/__pycache__/
 *.py[cod]
-
-# dbt Artifacts
 dbt/target/
 dbt/logs/
-
-# IDE Settings
 .vscode/
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Others
 architecture_img.png
