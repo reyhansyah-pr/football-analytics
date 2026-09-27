@@ -18,10 +18,13 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/football-analytics
-            # sudo chown -R $USER:$USER ~/football-analytics #restore ownership on user root
+            sudo chown -R $USER:$USER ~/football-analytics #restore ownership on user root
             # Fetch latest changes from main
             git fetch origin main
             git reset --hard origin/main
+
+            # Ensure container has full write access to dbt output directories
+            sudo chmod -R 777 ~/football-analytics/dbt
 
             # Run dbt
             docker exec pl_airflow_scheduler bash -c "cd dbt && dbt build --log-path /opt/airflow/logs/dbt_logs"
