@@ -1,5 +1,16 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key='match_season_key'
+    )
+}}
+
 with source as (
     select * from {{ source('raw_data', 'raw_matches') }}
+
+    {% if is_incremental() %}
+        where loaded_at > (select max(loaded_at) from {{ this }})
+    {% endif %}
 )
 
 , dedup as (

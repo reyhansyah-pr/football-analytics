@@ -1,5 +1,16 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key=['club_key', 'manager_name', 'from_date']
+    )
+}}
+
 with source as (
     select * from {{ source('raw_data', 'raw_managers') }}
+    
+    {% if is_incremental() %}
+        where loaded_at > (select max(loaded_at) from {{ this }})
+    {% endif %}
 )
 
 , dedup as (
