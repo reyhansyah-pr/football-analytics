@@ -1,4 +1,4 @@
-# dbt_pl — Premier League Analytics dbt Project
+# Premier League Analytics End-to-End Pipeline Project
 
 A [dbt](https://www.getdbt.com/) project that transforms raw Premier League data (teams, matches, players, and managers) into an analytics-ready star schema for querying standings, results, and manager performance history.
 
