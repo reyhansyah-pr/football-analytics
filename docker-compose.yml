@@ -24,7 +24,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # SAFE: Written directly to your local D:\ project folder
+      # SAFE: Written directly to local project folder
       - ./postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -41,8 +41,9 @@ services:
       MB_DB_USER: ${POSTGRES_USER}
       MB_DB_PASS: ${POSTGRES_PASSWORD}
       MB_DB_HOST: postgres
+      MB_DB_AUTOMIGRATE: "false"
     volumes:
-      # SAFE: Written directly to your local D:\ project folder
+      # SAFE: Written directly to local project folder
       - ./metabase_data:/metabase-data
     depends_on:
       - postgres

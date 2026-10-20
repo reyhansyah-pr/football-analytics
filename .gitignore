@@ -15,4 +15,7 @@ dbt/logs/
 .vscode/
 .DS_Store
 Thumbs.db
-architecture_img.png
+*.png
+*.svg
+*.png
+*.zip
