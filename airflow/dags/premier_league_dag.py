@@ -17,7 +17,7 @@ with DAG(
     'premier_league_isolated_pipeline',
     default_args=default_args,
     description='Orchestrates Premier League modular ingestion and dbt marts creation using BashOperator',
-    schedule_interval='0 0 * * *', # Runs every day at 06:00 UTC
+    schedule_interval='0 0 * * *', # Runs every day at 00:00 UTC
     catchup=False,
     max_active_runs=1
 ) as dag:
@@ -34,8 +34,7 @@ with DAG(
         bash_command='cd /opt/airflow/etl && python main.py fetch_api'
     )
 
-    # Task 3: Build dbt Models (Runs staging, snapshots, tests, and marts)
-    # Note: Ensure your dbt folder is mounted at /opt/airflow/dbt if you want to use it this way
+    # Task 3: Build dbt Models
     run_dbt = BashOperator(
         task_id='execute_dbt_marts',
         bash_command='cd /opt/airflow/dbt && dbt run'
